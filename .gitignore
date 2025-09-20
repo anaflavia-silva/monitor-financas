@@ -1,0 +1,14 @@
+# Node
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Next.js
+.next
+out
+
+# DB
+backend/db/*.db
+
+# Env
+.env
