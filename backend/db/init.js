@@ -1,7 +1,5 @@
 const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
-const dbFile = path.join(__dirname, 'finance.db');
-const db = new sqlite3.Database(dbFile);
+const db = new sqlite3.Database('./db/finance.db');
 
 db.serialize(() => {
   db.run(`
@@ -9,20 +7,18 @@ db.serialize(() => {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       description TEXT NOT NULL,
       amount REAL NOT NULL,
-      type TEXT NOT NULL CHECK (type IN ('income','expense')),
-      category TEXT,
-      date TEXT NOT NULL
+      type TEXT NOT NULL
     )
   `);
 
-  const stmt = db.prepare(`INSERT INTO transactions (description, amount, type, category, date) VALUES (?,?,?,?,?)`);
-  stmt.run('Salario', 4000, 'income', 'Trabalho', new Date().toISOString());
-  stmt.run('Aluguel', 1200, 'expense', 'Moradia', new Date().toISOString());
-  stmt.run('Supermercado', 300, 'expense', 'Alimentacao', new Date().toISOString());
-  stmt.run('Freelance', 800, 'income', 'Freelas', new Date().toISOString());
-  stmt.finalize();
+  db.run(`DELETE FROM transactions`); // Limpa dados antigos
+  db.run(`INSERT INTO transactions (description, amount, type) VALUES
+    ('Salário', 5000, 'entrada'),
+    ('Aluguel', 1200, 'saida'),
+    ('Supermercado', 600, 'saida'),
+    ('Freelance', 800, 'entrada')
+  `);
 
-  console.log('DB inicializado em', dbFile);
+  console.log('Banco inicializado com dados de exemplo.');
+  db.close();
 });
-
-db.close();
